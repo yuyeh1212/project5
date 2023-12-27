@@ -30,14 +30,47 @@ snake[3] = {
   y: 0,
 };
 
-for (let i = 0; i < snake.length; i++) {
-  if (i == 0) {
-    ctx.fillStyle = "lightgreen";
-  } else {
-    ctx.fillStyle = "lightblue";
+let d = "Right";
+
+function draw() {
+  //背景全設定為黑色
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  //畫出蛇
+  for (let i = 0; i < snake.length; i++) {
+    if (i == 0) {
+      ctx.fillStyle = "lightgreen";
+    } else {
+      ctx.fillStyle = "lightblue";
+    }
+    ctx.strokeStyle = "white";
+    // x, y, width, height
+    ctx.fillRect(snake[i].x, snake[i].y, unit, unit);
+    ctx.strokeRect(snake[i].x, snake[i].y, unit, unit);
   }
-  ctx.strokeStyle = "white";
-  // x, y, width, height
-  ctx.fillRect(snake[i].x, snake[i].y, unit, unit);
-  ctx.strokeRect(snake[i].x, snake[i].y, unit, unit);
+
+  //以目前的 d 變數方向，來決定蛇的下一幀要放在哪個座標
+  let snakeX = snake[0].x; // snake[0]是物件，但snake[0].x是number
+  let snakeY = snake[0].y;
+  if (d == "Left") {
+    snakeX -= unit;
+  } else if (d == "Up") {
+    snakeY -= unit;
+  } else if (d == "Right") {
+    snakeX += unit;
+  } else if (d == "Down") {
+    snakeY += unit;
+  }
+
+  let newHead = {
+    x: snakeX,
+    y: snakeY,
+  };
+
+  //確認蛇是否吃到果實
+  snake.pop();
+  snake.unshift(newHead);
 }
+
+let myGame = setInterval(draw, 100);
