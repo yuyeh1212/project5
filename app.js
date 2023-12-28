@@ -8,27 +8,28 @@ const row = canvas.height / unit; // 400 / 20 = 20
 const column = canvas.width / unit; // 400 / 20 = 20
 
 let snake = []; // array 中的每個元素，都是一個物件
-//物件的工作是，儲存身體的 x, y 座標
+function createSnake() {
+  // 物件的工作是，儲存身體的x, y座標
+  snake[0] = {
+    x: 80,
+    y: 0,
+  };
 
-snake[0] = {
-  x: 80,
-  y: 0,
-};
+  snake[1] = {
+    x: 60,
+    y: 0,
+  };
 
-snake[1] = {
-  x: 60,
-  y: 0,
-};
+  snake[2] = {
+    x: 40,
+    y: 0,
+  };
 
-snake[2] = {
-  x: 40,
-  y: 0,
-};
-
-snake[3] = {
-  x: 20,
-  y: 0,
-};
+  snake[3] = {
+    x: 20,
+    y: 0,
+  };
+}
 
 class Fruit {
   constructor() {
@@ -49,6 +50,7 @@ class Fruit {
     function checkOverlap(new_x, new_y) {
       for (let i = 0; i < snake.length; i++) {
         if (new_x == snake[i].x && new_y == snake[i].y) {
+          console.log("overlapping...");
           overlapping = true;
           return;
         } else {
@@ -68,6 +70,8 @@ class Fruit {
   }
 }
 
+//初始設定
+createSnake();
 let myFruit = new Fruit();
 
 window.addEventListener("keydown", changeDirection);
@@ -82,9 +86,23 @@ function changeDirection(e) {
   } else if (e.key == "ArrowUp" && d != "Down") {
     d = "Up";
   }
+
+  //每次按下方向鍵之後，在下一幀輩畫出來之前，
+  //不接受任何 keydown 事件
+  //以防止連續按鍵導致蛇在邏輯上自殺
+  window.removeEventListener("keydown", changeDirection);
 }
 
 function draw() {
+  //每次畫圖前，確認蛇是否要到自身
+  for (let i = 1; i < snake.length; i++) {
+    if (snake[i].x == snake[0].x && snake[i].y == snake[0].y) {
+      clearInterval(myGame);
+      alert("遊戲結束");
+      return;
+    }
+  }
+
   //背景全設定為黑色
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -145,6 +163,7 @@ function draw() {
   }
 
   snake.unshift(newHead);
+  window.addEventListener("keydown", changeDirection);
 }
 
 let myGame = setInterval(draw, 100);
