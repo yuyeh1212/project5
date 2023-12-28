@@ -30,6 +30,46 @@ snake[3] = {
   y: 0,
 };
 
+class Fruit {
+  constructor() {
+    this.x = Math.floor(Math.random() * column) * unit;
+    this.y = Math.floor(Math.random() * row) * unit;
+  }
+
+  drawFruit() {
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(this.x, this.y, unit, unit);
+  }
+
+  pickALocation() {
+    let overlapping = false;
+    let new_x;
+    let new_y;
+
+    function checkOverlap(new_x, new_y) {
+      for (let i = 0; i < snake.length; i++) {
+        if (new_x == snake[i].x && new_y == snake[i].y) {
+          overlapping = true;
+          return;
+        } else {
+          overlapping = false;
+        }
+      }
+    }
+
+    do {
+      new_x = Math.floor(Math.random() * column) * unit;
+      new_y = Math.floor(Math.random() * row) * unit;
+      checkOverlap(new_x, new_y);
+    } while (overlapping);
+
+    this.x = new_x;
+    this.y = new_y;
+  }
+}
+
+let myFruit = new Fruit();
+
 window.addEventListener("keydown", changeDirection);
 let d = "Right";
 function changeDirection(e) {
@@ -48,6 +88,8 @@ function draw() {
   //背景全設定為黑色
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  myFruit.drawFruit();
 
   //畫出蛇
   for (let i = 0; i < snake.length; i++) {
@@ -95,7 +137,13 @@ function draw() {
   };
 
   //確認蛇是否吃到果實
-  snake.pop();
+  if (snake[0].x == myFruit.x && snake[0].y == myFruit.y) {
+    myFruit.pickALocation();
+    //更新分數
+  } else {
+    snake.pop();
+  }
+
   snake.unshift(newHead);
 }
 
